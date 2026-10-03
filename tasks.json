@@ -1,0 +1,204 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Dog Match: create Python 3.11 environment",
+			"type": "shell",
+			"command": "py",
+			"args": [
+				"-3.11",
+				"-m",
+				"venv",
+				".venv311"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Dog Match: install core and test dependencies",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"pip",
+				"install",
+				"-e",
+				".[dev]"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Dog Match: install image model dependencies",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"pip",
+				"install",
+				"-e",
+				".[model]"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Dog Match: run tests and coverage gate",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"pytest",
+				"--cov=dog_match",
+				"--cov-report=term-missing",
+				"--cov-fail-under=80.1"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Dog Match: build local image index",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"dog_match",
+				"build-index",
+				"--dataset",
+				".\\Dog-Breeds-Dataset",
+				"--cache-dir",
+				".\\.cache\\dog-match"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Dog Match: serve locally",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"dog_match",
+				"serve",
+				"--dataset",
+				".\\Dog-Breeds-Dataset",
+				"--cache-dir",
+				".\\.cache\\dog-match"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Dog Match: type check",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"mypy",
+				"src/dog_match",
+				"scripts/evaluate_matching.py"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Dog Match: browser matrix",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"pytest",
+				"tests/e2e",
+				"-q",
+				"--browser",
+				"chromium",
+				"--browser",
+				"firefox",
+				"--browser",
+				"webkit"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Dog Match: run 100-photo accuracy evaluation",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"scripts/evaluate_matching.py",
+				"--dataset",
+				"./Dog-Breeds-Dataset",
+				"--cache-dir",
+				"./.cache/dog-match",
+				"--sample-size",
+				"100",
+				"--seed",
+				"42"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Dog Match: validate local dataset",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"dog_match",
+				"validate-dataset",
+				"./Dog-Breeds-Dataset",
+				".\u0002Dog-Breeds-Dataset"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Dog Match: final coverage after evaluator updates",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"pytest",
+				"--cov=dog_match",
+				"--cov-report=term-missing",
+				"--cov-fail-under=80.1"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Dog Match: final mypy after evaluator updates",
+			"type": "shell",
+			"command": ".\\.venv311\\Scripts\\python.exe",
+			"args": [
+				"-m",
+				"mypy",
+				"src/dog_match",
+				"scripts/evaluate_matching.py"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Dog Match: final workspace integrity check",
+			"type": "shell",
+			"command": "git diff --check; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; $tasks = Get-Content 'specs/001-dog-breed-matching/tasks.md' -Raw; $done = [regex]::Matches($tasks, '(?m)^- \\[X\\] T\\d{3}').Count; $open = [regex]::Matches($tasks, '(?m)^- \\[ \\] T\\d{3}').Count; $cacheIgnored = git check-ignore '.cache/dog-match/manifest.json'; $envIgnored = git check-ignore '.venv311/pyvenv.cfg'; $reportExists = Test-Path 'specs/001-dog-breed-matching/accuracy-evaluation.md'; if ($done -eq 32 -and $open -eq 1 -and $cacheIgnored -and $envIgnored -and $reportExists) { 'PASS: diff clean; 32 tasks done, 1 Safari task open; cache/venv ignored; accuracy report present' } else { \"FAIL: done=$done open=$open report=$reportExists\"; exit 1 }",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		}
+	]
+}
