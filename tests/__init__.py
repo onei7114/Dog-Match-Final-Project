@@ -1,1 +1,0 @@
-"""Dog Match test package."""
