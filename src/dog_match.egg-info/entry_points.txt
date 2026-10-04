@@ -1,0 +1,2 @@
+[console_scripts]
+dog-match = dog_match.cli:main
